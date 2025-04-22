@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/x-icon" href="">
+    <title>Über mich</title>
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+header {
+    background-color: transparent;
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 30px;
+    position: relative;
+    text-align: center;
+    box-sizing: border-box;
+    border: 2px solid white;
+    backdrop-filter: blur(90px);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.185);
+    border-radius: 20px;
+}
+
+header .btn {
+    position: absolute;
+    background-color: #FF5733;
+    border-radius: 20px;
+    border: none;
+    height: 40px;
+    width: 120px;
+    color: white;
+    right: 25px;
+    top: 100px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+header .btn:hover {
+    background-color: #C70039;
+    transform: scale(1.05);
+}
+
+header h1 {
+    font-size: 2.5rem;
+    color: black;
+    background-color: transparent;
+}
+
+header .Link {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 20px;
+    background-color: transparent ;
+}
+
+header .Link a {
+    text-decoration: none;
+    font-size: 20px;
+    color: black;
+    font-weight: bold;
+    transition: color 0.3s ease;
+    background-color: transparent;
+}
+
+header .Link a:hover {
+    color: #FF5733;
+}
+
+header .Link .Main {
+    text-decoration: underline;
+}
+
+body {
+    padding: 20px;
+    line-height: 1.6;
+    color: black;
+    min-height: 100vh;
+    background-image: url(1Bild.png);
+    background-size: cover;
+    background-position: center;
+}
+
+footer {
+    margin-top: 30px;
+    text-align: center;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.content {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.Anschreiben {
+    max-height: autox;
+    flex: 1;
+    border: 2px solid white;
+    padding: 20px;
+    color: rgb(0, 0, 0);
+    border-radius: 10px;
+    background-color: transparent;
+    backdrop-filter: blur(90px);
+}
+
+.Anschreibe{
+    padding: 20px;
+    border-radius: 10px;
+    background-color: (transparent);
+}
+
+.bilder {
+    max-height: auto;
+    width: 600px;
+    flex: 1;
+    border: 2px solid white;
+    border-radius: 10px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: transparent;
+    backdrop-filter: blur(40px);
+}
+
+.bilder img {
+    max-width: 100%;
+    max-height: 100%;
+    border-radius: 10px;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <form action="/logout" method="get">
+            <button type="submit" class="btn">Abmelden</button>
+        </form>
+        <h1 class="h1">Meine Bewerbung</h1>
+        <div class="Link">
+            <a href="Login.html">Home</a>
+            <a href="uebermich.html" class="Main">Über mich</a>
+            <a href="Profil.html">Download</a>
+        </div>
+    </header>
+    <div class="content">
+        <div class="Anschreiben">
+            <p class="Anschreibe"> 
+                <b>Bewerbung um einen Ausbildungsplatz als Fachinformatikerin für Systemintegration</b><br><br>  
+                
+                Sehr geehrte Damen und Herren,<br><br>  
+                
+                nach dem erfolgreichen Abschluss der Wirtschaftsschule letztes Jahr strebe ich nun den Einstieg in die Berufswelt an. Die von Ihnen ausgeschriebene Ausbildungsstelle als Fachinformatikerin für Systemintegration hat mein besonderes Interesse geweckt, da Ihr Unternehmen für Fortschritt und innovative Lösungen steht. Die Aufgabenbeschreibung passt ideal zu meinen Interessen und Vorstellungen.<br><br>  
+                
+                Bereits während meiner Schulzeit habe ich eine starke Begeisterung für Informatik entwickelt. Im Rahmen eines Wahlfaches konnte ich verschiedene Bereiche dieses Fachgebiets kennenlernen, wodurch ich festgestellt habe, dass der Beruf der Fachinformatikerin für Systemintegration besonders gut zu mir passt. Dies wurde während eines Praktikums in einem mittelständischen Unternehmen zusätzlich bestätigt. Die Arbeit an IT-Systemen und die Lösung technischer Herausforderungen haben mir große Freude bereitet und mein Interesse weiter verstärkt.<br><br>  
+                
+                Ich bin hochmotiviert, meine Ausbildung in diesem zukunftsorientierten Berufsfeld zu beginnen, und freue mich darauf, ab August/ September 2025 wertvolle praktische Erfahrungen bei Ihnen zu sammeln und mich in Ihrem Team einzubringen.<br><br>  
+                
+                Gerne stehe ich Ihnen für ein persönliches Gespräch zur Verfügung.<br><br>  
+                
+                Mit freundlichen Grüßen<br><br><br>  
+                
+                Pia Raikowski  
+                </p>
+                
+        </div>
+        <div class="bilder">
+            <img src="2Bild.jpg" alt="Bewerbungsfoto">
+        </div>
+    </div>
+    <footer>
+        <p>&copy; 2025 Pia Raikowski. Alle Rechte vorbehalten.</p>
+    </footer>
+</body>
+</html>
