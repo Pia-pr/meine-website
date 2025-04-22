@@ -1,5 +1,5 @@
 const express = require('express');
-const bcrypt = require('bcrypt'); // Zum sicheren Hashen der Passwörter
+const bcryptjs = require('bcryptjs'); // Zum sicheren Hashen der Passwörter
 const connectDB = require('./db'); // Unsere DB-Verbindung
 
 const app = express();

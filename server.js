@@ -2,7 +2,7 @@ import express from 'express';
 import path from 'path';
 import session from 'express-session';
 import fs from 'fs';
-import bcrypt from 'bcrypt';
+import bcrypt from 'bcryptjs';
 import cookieParser from 'cookie-parser'; // Für Cookies
 
 const app = express();
