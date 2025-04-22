@@ -22,5 +22,5 @@
     "uuid": "^11.0.4"
   },
   "keywords": [],
-  "type": "commonjs"
+  "type": "module"
 }
