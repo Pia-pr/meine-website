@@ -10,7 +10,6 @@
       background-image: url(3Bild.jpg);
       background-size: cover;
       background-position: center;
-      background-repeat: no-repeat;
       background-attachment: fixed;
       font-family: Arial, sans-serif;
     }
@@ -58,7 +57,7 @@
     }
 
     main {
-      max-width: 800px;
+      max-width: 900px;
       margin: 0 auto;
       background: rgba(255, 255, 255, 0.85);
       border-radius: 15px;
@@ -66,9 +65,15 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
 
+    h2 {
+      margin-top: 20px;
+      color: #333;
+    }
+
     table {
       width: 100%;
       border-collapse: collapse;
+      margin-bottom: 30px;
     }
 
     th, td {
@@ -80,6 +85,30 @@
     th {
       background-color: #FF5733;
       color: white;
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background-color: #a71d2a;
+    }
+
+    form {
+      margin-top: 30px;
+    }
+
+    input {
+      padding: 8px;
+      margin: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
     }
 
     @media (max-width: 600px) {
@@ -115,27 +144,108 @@
       </thead>
       <tbody></tbody>
     </table>
+
+    <h2>Benutzer verwalten</h2>
+    <table id="userTable">
+      <thead>
+        <tr>
+          <th>Benutzername</th>
+          <th>Aktion</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <form id="addUserForm">
+      <h3>Neuen Benutzer hinzufügen</h3>
+      <input type="text" name="benutzername" placeholder="Benutzername" required />
+      <input type="password" name="passwort" placeholder="Passwort" required />
+      <button type="submit" class="btn">Hinzufügen</button>
+    </form>
   </main>
 
   <script>
-    fetch('/api/logins')
-      .then(res => {
+    async function loadLogins() {
+      try {
+        const res = await fetch('/api/logins');
         if (!res.ok) throw new Error('Zugriff verweigert');
-        return res.json();
-      })
-      .then(data => {
+        const data = await res.json();
         const tbody = document.querySelector('#loginTable tbody');
+        tbody.innerHTML = '';
         data.forEach(user => {
           const row = document.createElement('tr');
           const loginTime = user.lastLogin ? new Date(user.lastLogin).toLocaleString('de-DE') : 'Nie';
           row.innerHTML = `<td>${user.benutzername}</td><td>${loginTime}</td>`;
           tbody.appendChild(row);
         });
-      })
-      .catch(err => {
+      } catch (err) {
         console.error('Fehler beim Laden der Logins:', err);
-        document.querySelector('main').innerHTML += '<p style="color: red;">Fehler beim Laden der Login-Daten.</p>';
-      });
+      }
+    }
+
+    async function loadUsers() {
+      try {
+        const res = await fetch('/api/users');
+        if (!res.ok) throw new Error('Fehler beim Laden');
+        const users = await res.json();
+        const tbody = document.querySelector('#userTable tbody');
+        tbody.innerHTML = '';
+        users.forEach(user => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${user.benutzername}</td>
+            <td>
+              ${user.benutzername !== 'Piaa' ? `<button class="delete-btn" onclick="deleteUser('${user.benutzername}')">Löschen</button>` : ''}
+            </td>
+          `;
+          tbody.appendChild(row);
+        });
+      } catch (err) {
+        console.error('Fehler beim Laden der Benutzer:', err);
+      }
+    }
+
+    async function deleteUser(benutzername) {
+      if (!confirm(`Benutzer "${benutzername}" wirklich löschen?`)) return;
+      try {
+        const res = await fetch(`/api/users/${benutzername}`, {
+          method: 'DELETE'
+        });
+        if (!res.ok) throw new Error('Fehler beim Löschen');
+        await loadUsers();
+        await loadLogins();
+      } catch (err) {
+        alert('Fehler beim Löschen: ' + err.message);
+      }
+    }
+
+    document.getElementById('addUserForm').addEventListener('submit', async e => {
+      e.preventDefault();
+      const formData = new FormData(e.target);
+      const benutzername = formData.get('benutzername');
+      const passwort = formData.get('passwort');
+
+      try {
+        const res = await fetch('/api/users', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ benutzername, passwort })
+        });
+        if (!res.ok) {
+          const text = await res.text();
+          throw new Error(text);
+        }
+        e.target.reset();
+        await loadUsers();
+        alert('Benutzer hinzugefügt!');
+      } catch (err) {
+        alert('Fehler beim Hinzufügen: ' + err.message);
+      }
+    });
+
+    // Initial laden
+    loadLogins();
+    loadUsers();
   </script>
 </body>
 </html>

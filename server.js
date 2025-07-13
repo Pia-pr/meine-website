@@ -1,51 +1,31 @@
 import express from 'express';
 import path from 'path';
 import session from 'express-session';
-import fs from 'fs';
 import bcrypt from 'bcryptjs';
 import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
+dotenv.config();
+
+import { getUsers, getUserByUsername, addUser, updateLastLogin } from './db.js';
 
 const app = express();
 const port = 3000;
 
-// Middleware: Formulardaten parsen
 app.use(express.urlencoded({ extended: true }));
-
-// Middleware: Cookies analysieren
 app.use(cookieParser());
 
-// Session-Setup
 app.use(
   session({
-    secret: 'meinGeheimnis', // unbedingt geheim halten!
+    secret: 'meinGeheimnis',
     resave: false,
     saveUninitialized: true,
   })
 );
 
-// Dummy-Datenbank (JSON-Datei)
-const dbPath = './users.json';
-if (!fs.existsSync(dbPath)) {
-  fs.writeFileSync(dbPath, JSON.stringify([]));
-}
-
-// Benutzer laden
-function getUsers() {
-  return JSON.parse(fs.readFileSync(dbPath, 'utf8'));
-}
-
-// Benutzer speichern (hinzufügen)
-function saveUser(user) {
-  const users = getUsers();
-  users.push(user);
-  fs.writeFileSync(dbPath, JSON.stringify(users, null, 2));
-}
-
 // Middleware: Cookie "rememberMe" prüfen und Session setzen
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
   if (!req.session.isLoggedIn && req.cookies.rememberMe) {
-    const users = getUsers();
-    const user = users.find(u => u.benutzername === req.cookies.rememberMe);
+    const user = await getUserByUsername(req.cookies.rememberMe);
     if (user) {
       req.session.isLoggedIn = true;
       req.session.username = user.benutzername;
@@ -55,27 +35,24 @@ app.use((req, res, next) => {
 });
 
 // Login Route (POST)
-app.post('/login', (req, res) => {
+app.post('/login', async (req, res) => {
   const { benutzername, passwort, rememberMe } = req.body;
-  const users = getUsers();
-  const user = users.find(u => u.benutzername === benutzername);
+  const user = await getUserByUsername(benutzername);
 
   if (user && bcrypt.compareSync(passwort, user.passwort)) {
     req.session.isLoggedIn = true;
     req.session.username = benutzername;
 
     // Login-Zeit speichern
-    user.lastLogin = new Date().toISOString();
-    fs.writeFileSync(dbPath, JSON.stringify(users, null, 2));
+    const now = new Date().toISOString();
+    await updateLastLogin(benutzername, now);
 
-    // "Remember me" Cookie setzen
     if (rememberMe) {
       res.cookie('rememberMe', benutzername, {
         maxAge: 30 * 24 * 60 * 60 * 1000,
         httpOnly: true,
       });
     }
-
     return res.redirect('/Login.html');
   } else {
     return res.sendFile(path.resolve('Seiten/Falsch.html'));
@@ -97,49 +74,24 @@ app.get('/Login.html', (req, res) => {
   }
 
   if (req.session.username === 'Piaa') {
-    // OP-Benutzer sieht eigene Seite
     return res.sendFile(path.resolve('Seiten/Login_OP.html'));
   } else {
     return res.sendFile(path.resolve('Seiten/Login.html'));
   }
 });
 
-// API: Login-Logs nur für OP (Piaa)
-app.get('/api/logins', (req, res) => {
+// API: Alle Benutzer abrufen (nur für OP)
+app.get('/api/users', async (req, res) => {
   if (!req.session.isLoggedIn || req.session.username !== 'Piaa') {
-    return res.status(403).send('Nicht erlaubt');
+    return res.status(403).json({ error: 'Nicht erlaubt' });
   }
-  const users = getUsers();
-  const logins = users.map(u => ({
-    benutzername: u.benutzername,
-    lastLogin: u.lastLogin || 'Nie',
-  }));
-  res.json(logins);
-});
-
-// OP-Seite (nur für Piaa)
-app.get('/OP.html', (req, res) => {
-  if (!req.session.isLoggedIn || req.session.username !== 'Piaa') {
-    return res.redirect('/');
-  }
-  res.sendFile(path.resolve('Seiten/OP.html'));
-});
-
-// Weitere Seiten (nur für eingeloggte Nutzer)
-const protectedPages = ['Liste.html', 'Profil.html', 'uebermich.html'];
-protectedPages.forEach((page) => {
-  app.get(`/${page}`, (req, res) => {
-    if (!req.session.isLoggedIn) {
-      return res.redirect('/');
-    }
-    res.sendFile(path.resolve('Seiten', page));
-  });
+  const users = await getUsers();
+  res.json(users);
 });
 
 // Registrierung (POST)
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
   const { benutzername, passwort, passwortBestätigen } = req.body;
-
   if (!benutzername || !passwort || !passwortBestätigen) {
     return res.status(400).send('Alle Felder sind erforderlich.');
   }
@@ -147,14 +99,13 @@ app.post('/register', (req, res) => {
     return res.status(400).send('Die Passwörter stimmen nicht überein.');
   }
 
-  const users = getUsers();
-  if (users.some(u => u.benutzername === benutzername)) {
+  const existingUser = await getUserByUsername(benutzername);
+  if (existingUser) {
     return res.status(400).send('Benutzername bereits vergeben.');
   }
 
   const hashedPassword = bcrypt.hashSync(passwort, 10);
-  const user = { benutzername, passwort: hashedPassword };
-  saveUser(user);
+  await addUser(benutzername, hashedPassword);
 
   res.sendFile(path.resolve('Seiten/Login.html'));
 });
@@ -164,6 +115,25 @@ app.get('/logout', (req, res) => {
   req.session.destroy(() => {
     res.clearCookie('rememberMe');
     res.redirect('/');
+  });
+});
+
+// OP-Seite (nur für OP)
+app.get('/OP.html', (req, res) => {
+  if (!req.session.isLoggedIn || req.session.username !== 'Piaa') {
+    return res.redirect('/');
+  }
+  res.sendFile(path.resolve('Seiten/OP.html'));
+});
+
+// Weitere geschützte Seiten
+const protectedPages = ['Liste.html', 'Profil.html', 'uebermich.html'];
+protectedPages.forEach((page) => {
+  app.get(`/${page}`, (req, res) => {
+    if (!req.session.isLoggedIn) {
+      return res.redirect('/');
+    }
+    res.sendFile(path.resolve('Seiten', page));
   });
 });
 
@@ -188,7 +158,6 @@ app.get('/download/:filename', (req, res) => {
   }
 });
 
-// Server starten
 app.listen(port, () => {
   console.log(`Server läuft unter http://localhost:${port}`);
 });
