@@ -1,14 +1,17 @@
 [
   {
     "benutzername": "Piaa",
-    "passwort": "$2b$10$5Z4Br2VwZQNhuuIt53qlMuYwGXEaS2UY7g0lQKgUuwJsmRDftwO7."
+    "passwort": "$2b$10$5Z4Br2VwZQNhuuIt53qlMuYwGXEaS2UY7g0lQKgUuwJsmRDftwO7.",
+    "lastLogin": null
   },
   {
     "benutzername": "Bewerbung",
-    "passwort": "$2b$10$q7HbTgp0GKxJ30Ffe3WQ4e4P9VYBj.OLAg3XRAYcmTWAMHyq/kQ4y"
+    "passwort": "$2b$10$q7HbTgp0GKxJ30Ffe3WQ4e4P9VYBj.OLAg3XRAYcmTWAMHyq/kQ4y",
+    "lastLogin": null
   },
   {
     "benutzername": "Bewerberin",
-    "passwort": "$2b$10$BYQEjf/H14yehn1FCtUCMOsHvWSowvc3yLI9pcpApL0rH6SeLiqnO"
+    "passwort": "$2b$10$BYQEjf/H14yehn1FCtUCMOsHvWSowvc3yLI9pcpApL0rH6SeLiqnO",
+    "lastLogin": null
   }
 ]

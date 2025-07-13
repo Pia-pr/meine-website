@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Operator Bereich</title>
   <style>
     body {
@@ -27,7 +27,6 @@
       border: 2px solid white;
       backdrop-filter: blur(90px);
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.185);
-      box-sizing: border-box;
     }
 
     header .Headline h1 {
@@ -36,7 +35,7 @@
       margin: 0;
     }
 
-    header .btn {
+    .btn {
       background-color: #FF5733;
       border-radius: 20px;
       border: none;
@@ -48,18 +47,39 @@
       transition: background-color 0.3s ease, transform 0.2s;
     }
 
-    header .btn:hover {
+    .btn:hover {
       background-color: #C70039;
       transform: scale(1.05);
     }
 
-    header .btn a {
+    a {
       text-decoration: none;
       color: white;
-      display: block;
+    }
+
+    main {
+      max-width: 800px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.85);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    table {
       width: 100%;
-      height: 100%;
-      line-height: 40px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    th {
+      background-color: #FF5733;
+      color: white;
     }
 
     @media (max-width: 600px) {
@@ -69,7 +89,7 @@
         text-align: center;
       }
 
-      header .btn {
+      .btn {
         width: 100%;
         max-width: 200px;
       }
@@ -80,10 +100,42 @@
   <header>
     <div class="Headline">
       <h1>Willkommen im Operator Bereich!</h1>
-      <a href="Login_OP.html">
-        <button class="btn">Back</button>
-      </a>
+      <a href="Login_OP.html"><button class="btn">Zurück</button></a>
     </div>
   </header>
+
+  <main>
+    <h2>Letzte Logins</h2>
+    <table id="loginTable">
+      <thead>
+        <tr>
+          <th>Benutzername</th>
+          <th>Letzter Login</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </main>
+
+  <script>
+    fetch('/api/logins')
+      .then(res => {
+        if (!res.ok) throw new Error('Zugriff verweigert');
+        return res.json();
+      })
+      .then(data => {
+        const tbody = document.querySelector('#loginTable tbody');
+        data.forEach(user => {
+          const row = document.createElement('tr');
+          const loginTime = user.lastLogin ? new Date(user.lastLogin).toLocaleString('de-DE') : 'Nie';
+          row.innerHTML = `<td>${user.benutzername}</td><td>${loginTime}</td>`;
+          tbody.appendChild(row);
+        });
+      })
+      .catch(err => {
+        console.error('Fehler beim Laden der Logins:', err);
+        document.querySelector('main').innerHTML += '<p style="color: red;">Fehler beim Laden der Login-Daten.</p>';
+      });
+  </script>
 </body>
 </html>
