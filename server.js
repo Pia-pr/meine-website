@@ -98,13 +98,6 @@ app.get('/', (req, res) => {
 
 // Route: Login-Seite (GET)
 app.get('/Login.html', (req, res) => {
-  if (req.session.isLoggedIn) {
-    res.sendFile(path.resolve('Seiten/Login.html'));
-  } else {
-    res.redirect('/'); // Zur Startseite weiterleiten
-  }
-});
-app.get('/Profil.html', (req, res) => {
   if (!req.session.isLoggedIn) {
     return res.redirect('/');
   }
