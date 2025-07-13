@@ -6,11 +6,39 @@
     <title>Document</title>
 </head>
 <style>
-    .body{
-        background-image: url(3Bild.jpg);
+    body{
+    background-image: url(3Bild.jpg);
+    background-size: cover;
+    background-position: center;
+     background-repeat: no-repeat;
+    background-attachment: fixed;
     }
+    .btn {
+    position: absolute;
+    background-color: #f82d67;
+    border-radius: 20px;
+    border: none;
+    height: 40px;
+    width: 120px;
+    color: white;
+    right: 25px;
+    top: 50px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s;
+    text-decoration: none;
+}
+    .btn a{
+        text-decoration: none;
+        color: white;
+    }
+
+.btn:hover {
+    background-color: #C70039;
+    transform: scale(1.05);
+}
 </style>
 <body>
-    test
+   <a href="Login_OP.html"> <button type="submit" class="btn">Back</button></a>
 </body>
 </html>
