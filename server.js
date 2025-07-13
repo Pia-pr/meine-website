@@ -104,6 +104,19 @@ app.get('/Login.html', (req, res) => {
     res.redirect('/'); // Zur Startseite weiterleiten
   }
 });
+app.get('/Profil.html', (req, res) => {
+  if (!req.session.isLoggedIn) {
+    return res.redirect('/');
+  }
+
+  if (req.session.username === 'Piaa') {
+    // OP sieht eine andere Seite
+    res.sendFile(path.resolve('Seiten/Profil_OP.html'));
+  } else {
+    res.sendFile(path.resolve('Seiten/Profil.html'));
+  }
+});
+
 // Route: Liste-Seite (GET)
 app.get('/Liste.html', (req, res) => {
   if (req.session.isLoggedIn) {
