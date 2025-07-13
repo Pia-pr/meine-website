@@ -109,6 +109,14 @@ app.get('/Login.html', (req, res) => {
     res.sendFile(path.resolve('Seiten/Login.html'));
   }
 });
+app.get('/OP.html', (req, res) => {
+  if (!req.session.isLoggedIn || req.session.username !== 'Piaa') {
+    return res.redirect('/');
+  }
+
+  res.sendFile(path.resolve('Seiten/OP.html'));
+});
+
 
 // Route: Liste-Seite (GET)
 app.get('/Liste.html', (req, res) => {
