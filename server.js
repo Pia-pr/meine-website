@@ -96,6 +96,17 @@ app.get('/', (req, res) => {
   }
 });
 
+    function togglePasswordVisibility(inputId, icon) {
+      const input = document.querySelector(`input[name="${inputId}"]`);
+      if (input.type === 'password') {
+        input.type = 'text';
+        icon.className = 'bx bxs-lock-open';
+      } else {
+        input.type = 'password';
+        icon.className = 'bx bxs-lock';
+      }
+    }
+
 // Route: Login-Seite (GET)
 app.get('/Login.html', (req, res) => {
   if (req.session.isLoggedIn) {

@@ -3,11 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "��#\u0000 \u0000m\u0000e\u0000i\u0000n\u0000e\u0000-\u0000w\u0000e\u0000b\u0000s\u0000i\u0000t\u0000e\u0000\r\u0000 \u0000",
   "dependencies": {
     "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.3",
@@ -22,5 +23,13 @@
     "uuid": "^11.0.4"
   },
   "keywords": [],
-  "type": "module"
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pia-pr/meine-website.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Pia-pr/meine-website/issues"
+  },
+  "homepage": "https://github.com/Pia-pr/meine-website#readme"
 }
