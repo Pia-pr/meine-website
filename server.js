@@ -111,9 +111,9 @@ app.get('/Profil.html', (req, res) => {
 
   if (req.session.username === 'Piaa') {
     // OP sieht eine andere Seite
-    res.sendFile(path.resolve('Seiten/Profil_OP.html'));
+    res.sendFile(path.resolve('Seiten/Login_OP.html'));
   } else {
-    res.sendFile(path.resolve('Seiten/Profil.html'));
+    res.sendFile(path.resolve('Seiten/Login.html'));
   }
 });
 
