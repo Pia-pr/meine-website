@@ -200,7 +200,7 @@
           row.innerHTML = `
             <td>${user.benutzername}</td>
             <td>
-              <input type="password" placeholder="Neues Passwort" id="pw-${user.benutzername}" />
+              <input type="text" placeholder="Neues Passwort" id="pw-${user.benutzername}" />
               <button class="btn" onclick="changePassword('${user.benutzername}')">Ändern</button>
               ${user.benutzername !== 'Piaa' ? `<button class="delete-btn" onclick="deleteUser('${user.benutzername}')">Löschen</button>` : ''}
             </td>

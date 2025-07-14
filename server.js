@@ -119,6 +119,7 @@ app.get('/api/logins', async (req, res) => {
     const users = await getUsers();
     const logins = users.map(user => ({
       benutzername: user.benutzername,
+      lastLogin: (user.login_history || []).slice(-1)[0] || 'Nie',
       lastFiveLogins: (user.login_history || []).slice(-5).reverse()
     }));
     res.json(logins);
