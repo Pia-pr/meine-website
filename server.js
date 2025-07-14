@@ -109,7 +109,7 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// GET: Login-Logs (nur für OP)
+// GET: Letzte 5 Logins pro Benutzer (nur für OP)
 app.get('/api/logins', async (req, res) => {
   if (!req.session.isLoggedIn || req.session.username !== 'Piaa') {
     return res.status(403).send('Nicht erlaubt');
@@ -119,7 +119,7 @@ app.get('/api/logins', async (req, res) => {
     const users = await getUsers();
     const logins = users.map(user => ({
       benutzername: user.benutzername,
-      lastLogin: (user.login_history?.slice(-1)[0]) || 'Nie',
+      lastFiveLogins: (user.login_history || []).slice(-5).reverse()
     }));
     res.json(logins);
   } catch (err) {
@@ -182,6 +182,32 @@ app.delete('/api/users/:benutzername', async (req, res) => {
     res.status(500).send('Fehler beim Löschen');
   }
 });
+// Passwort ändern (für alle Benutzer erlaubt – nur OP darf UI sehen)
+app.post('/api/users/:benutzername/passwort', async (req, res) => {
+  const { benutzername } = req.params;
+  const { neuesPasswort } = req.body;
+
+  if (!req.session.isLoggedIn || req.session.username !== 'Piaa') {
+    return res.status(403).send('Nicht erlaubt');
+  }
+
+  if (!neuesPasswort || neuesPasswort.length < 4) {
+    return res.status(400).send('Ungültiges Passwort');
+  }
+
+  try {
+    const hashed = bcrypt.hashSync(neuesPasswort, 10);
+    await pool.query(
+      'UPDATE users SET passwort = $1 WHERE benutzername = $2',
+      [hashed, benutzername]
+    );
+    res.send('Passwort aktualisiert');
+  } catch (err) {
+    console.error('Fehler beim Passwort-Update:', err);
+    res.status(500).send('Fehler beim Aktualisieren des Passworts');
+  }
+});
+
 
 // OP-Seite
 app.get('/OP.html', (req, res) => {

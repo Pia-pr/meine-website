@@ -147,6 +147,9 @@
       <tbody></tbody>
     </table>
 
+    <!-- alles bis einschließlich CSS bleibt exakt wie in deiner Vorlage -->
+<!-- ... -->
+
     <h2>Benutzer verwalten</h2>
     <table id="userTable">
       <thead>
@@ -175,8 +178,8 @@
         const tbody = document.querySelector('#loginTable tbody');
         tbody.innerHTML = '';
         data.forEach(user => {
-          const row = document.createElement('tr');
           const loginTime = user.lastLogin ? new Date(user.lastLogin).toLocaleString('de-DE') : 'Nie';
+          const row = document.createElement('tr');
           row.innerHTML = `<td>${user.benutzername}</td><td>${loginTime}</td>`;
           tbody.appendChild(row);
         });
@@ -197,6 +200,8 @@
           row.innerHTML = `
             <td>${user.benutzername}</td>
             <td>
+              <input type="password" placeholder="Neues Passwort" id="pw-${user.benutzername}" />
+              <button class="btn" onclick="changePassword('${user.benutzername}')">Ändern</button>
               ${user.benutzername !== 'Piaa' ? `<button class="delete-btn" onclick="deleteUser('${user.benutzername}')">Löschen</button>` : ''}
             </td>
           `;
@@ -204,6 +209,29 @@
         });
       } catch (err) {
         console.error('Fehler beim Laden der Benutzer:', err);
+      }
+    }
+
+    async function changePassword(benutzername) {
+      const input = document.getElementById(`pw-${benutzername}`);
+      const neuesPasswort = input.value.trim();
+
+      if (!neuesPasswort) {
+        alert('Bitte ein neues Passwort eingeben.');
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/users/${benutzername}/passwort`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ neuesPasswort })
+        });
+        if (!res.ok) throw new Error(await res.text());
+        alert('Passwort geändert!');
+        input.value = '';
+      } catch (err) {
+        alert('Fehler beim Ändern: ' + err.message);
       }
     }
 
