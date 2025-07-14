@@ -3,7 +3,7 @@ const { Pool } = pkg;
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: { rejectUnauthorized: false }, // wichtig für Render
+  ssl: { rejectUnauthorized: false },
 });
 
 // Alle Benutzer auslesen
@@ -52,6 +52,16 @@ export async function updateLastLogin(username, time) {
     );
   } catch (err) {
     console.error('Fehler bei updateLastLogin:', err);
+    throw err;
+  }
+}
+
+// Benutzer löschen
+export async function deleteUserByUsername(benutzername) {
+  try {
+    await pool.query('DELETE FROM users WHERE benutzername = $1', [benutzername]);
+  } catch (err) {
+    console.error('Fehler bei deleteUserByUsername:', err);
     throw err;
   }
 }

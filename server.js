@@ -6,15 +6,14 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+
 import {
   getUsers,
   getUserByUsername,
   addUser,
-  updateLastLogin
+  updateLastLogin,
+  deleteUserByUsername
 } from './db.js';
-import dotenv from 'dotenv';
-dotenv.config({ path: '/etc/secrets/.env' });
-
 
 dotenv.config();
 
@@ -26,6 +25,7 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
+app.use(express.json()); // Für JSON Body parsing
 app.use(cookieParser());
 app.use(
   session({
@@ -38,10 +38,14 @@ app.use(
 // Middleware: Auto-Login durch Cookie
 app.use(async (req, res, next) => {
   if (!req.session.isLoggedIn && req.cookies.rememberMe) {
-    const user = await getUserByUsername(req.cookies.rememberMe);
-    if (user) {
-      req.session.isLoggedIn = true;
-      req.session.username = user.benutzername;
+    try {
+      const user = await getUserByUsername(req.cookies.rememberMe);
+      if (user) {
+        req.session.isLoggedIn = true;
+        req.session.username = user.benutzername;
+      }
+    } catch (err) {
+      console.error('Fehler beim Auto-Login:', err);
     }
   }
   next();
@@ -50,25 +54,30 @@ app.use(async (req, res, next) => {
 // POST: Login
 app.post('/login', async (req, res) => {
   const { benutzername, passwort, rememberMe } = req.body;
-  const user = await getUserByUsername(benutzername);
+  try {
+    const user = await getUserByUsername(benutzername);
 
-  if (user && bcrypt.compareSync(passwort, user.passwort)) {
-    req.session.isLoggedIn = true;
-    req.session.username = benutzername;
+    if (user && bcrypt.compareSync(passwort, user.passwort)) {
+      req.session.isLoggedIn = true;
+      req.session.username = benutzername;
 
-    const now = new Date().toISOString();
-    await updateLastLogin(benutzername, now);
+      const now = new Date().toISOString();
+      await updateLastLogin(benutzername, now);
 
-    if (rememberMe) {
-      res.cookie('rememberMe', benutzername, {
-        maxAge: 30 * 24 * 60 * 60 * 1000,
-        httpOnly: true,
-      });
+      if (rememberMe) {
+        res.cookie('rememberMe', benutzername, {
+          maxAge: 30 * 24 * 60 * 60 * 1000,
+          httpOnly: true,
+        });
+      }
+
+      return res.redirect('/Login.html');
+    } else {
+      return res.sendFile(path.resolve(__dirname, 'Seiten/Falsch.html'));
     }
-
-    return res.redirect('/Login.html');
-  } else {
-    return res.sendFile(path.resolve(__dirname, 'Seiten/Falsch.html'));
+  } catch (err) {
+    console.error('Fehler beim Login:', err);
+    res.status(500).send('Serverfehler');
   }
 });
 
@@ -84,15 +93,20 @@ app.post('/register', async (req, res) => {
     return res.status(400).send('Passwörter stimmen nicht überein.');
   }
 
-  const existing = await getUserByUsername(benutzername);
-  if (existing) {
-    return res.status(400).send('Benutzername bereits vergeben.');
+  try {
+    const existing = await getUserByUsername(benutzername);
+    if (existing) {
+      return res.status(400).send('Benutzername bereits vergeben.');
+    }
+
+    const hashed = bcrypt.hashSync(passwort, 10);
+    await addUser(benutzername, hashed);
+
+    res.sendFile(path.resolve(__dirname, 'Seiten/Login.html'));
+  } catch (err) {
+    console.error('Fehler bei der Registrierung:', err);
+    res.status(500).send('Serverfehler bei der Registrierung.');
   }
-
-  const hashed = bcrypt.hashSync(passwort, 10);
-  await addUser(benutzername, hashed);
-
-  res.sendFile(path.resolve(__dirname, 'Seiten/Login.html'));
 });
 
 // GET: Login-Logs (nur für OP)
@@ -101,20 +115,17 @@ app.get('/api/logins', async (req, res) => {
     return res.status(403).send('Nicht erlaubt');
   }
 
-  const users = await getUsers();
-  const logins = users.map(user => ({
-    benutzername: user.benutzername,
-    lastLogin: (user.login_history?.slice(-1)[0]) || 'Nie',
-  }));
-  res.json(logins);
-});
-
-// OP-Seite
-app.get('/OP.html', (req, res) => {
-  if (!req.session.isLoggedIn || req.session.username !== 'Piaa') {
-    return res.redirect('/');
+  try {
+    const users = await getUsers();
+    const logins = users.map(user => ({
+      benutzername: user.benutzername,
+      lastLogin: (user.login_history?.slice(-1)[0]) || 'Nie',
+    }));
+    res.json(logins);
+  } catch (err) {
+    console.error('Fehler beim Laden der Logins:', err);
+    res.status(500).send('Fehler beim Laden der Logins');
   }
-  res.sendFile(path.resolve(__dirname, 'Seiten/OP.html'));
 });
 
 // Benutzer auflisten (nur OP)
@@ -123,10 +134,10 @@ app.get('/api/users', async (req, res) => {
     return res.status(403).send('Nicht erlaubt');
   }
   try {
-    const result = await pool.query('SELECT benutzername FROM users ORDER BY benutzername ASC');
-    res.json(result.rows);
+    const users = await getUsers();
+    res.json(users.map(u => ({ benutzername: u.benutzername })));
   } catch (err) {
-    console.error(err);
+    console.error('Fehler beim Abrufen der Benutzer:', err);
     res.status(500).send('Fehler beim Abrufen der Benutzer');
   }
 });
@@ -142,16 +153,13 @@ app.post('/api/users', async (req, res) => {
   }
   try {
     const hashedPassword = bcrypt.hashSync(passwort, 10);
-    await pool.query(
-      'INSERT INTO users (benutzername, passwort, login_history) VALUES ($1, $2, $3)',
-      [benutzername, hashedPassword, []]
-    );
+    await addUser(benutzername, hashedPassword);
     res.status(201).send('Benutzer hinzugefügt');
   } catch (err) {
     if (err.code === '23505') {
       res.status(400).send('Benutzername bereits vergeben');
     } else {
-      console.error(err);
+      console.error('Fehler beim Hinzufügen:', err);
       res.status(500).send('Fehler beim Hinzufügen');
     }
   }
@@ -167,16 +175,23 @@ app.delete('/api/users/:benutzername', async (req, res) => {
     return res.status(400).send('OP-Benutzer kann nicht gelöscht werden');
   }
   try {
-    await pool.query('DELETE FROM users WHERE benutzername = $1', [benutzername]);
+    await deleteUserByUsername(benutzername);
     res.send('Benutzer gelöscht');
   } catch (err) {
-    console.error(err);
+    console.error('Fehler beim Löschen:', err);
     res.status(500).send('Fehler beim Löschen');
   }
 });
 
+// OP-Seite
+app.get('/OP.html', (req, res) => {
+  if (!req.session.isLoggedIn || req.session.username !== 'Piaa') {
+    return res.redirect('/');
+  }
+  res.sendFile(path.resolve(__dirname, 'Seiten/OP.html'));
+});
 
-// Login-Routing
+// Login-Seite mit Zugriffssteuerung
 app.get('/Login.html', (req, res) => {
   if (!req.session.isLoggedIn) {
     return res.redirect('/');
@@ -189,7 +204,7 @@ app.get('/Login.html', (req, res) => {
   }
 });
 
-// Statische Seiten
+// Geschützte Seiten
 ['Profil.html', 'uebermich.html', 'Liste.html'].forEach(page => {
   app.get(`/${page}`, (req, res) => {
     if (!req.session.isLoggedIn) {
@@ -215,12 +230,12 @@ app.get('/logout', (req, res) => {
 // Downloads
 app.use('/downloads', express.static(path.resolve(__dirname, 'downloads')));
 
-// Dateien zum Download anbieten
+// Datei-Download
 app.get('/download/:filename', (req, res) => {
   const { filename } = req.params;
   const filePath = path.resolve(__dirname, 'downloads', filename);
 
-  res.download(filePath, filename, (err) => {
+  res.download(filePath, filename, err => {
     if (err) {
       console.error('Fehler beim Download:', err);
       res.status(500).send('Fehler beim Herunterladen.');
