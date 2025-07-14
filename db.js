@@ -1,10 +1,13 @@
 import pkg from 'pg';
 const { Pool } = pkg;
 
-const pool = new Pool({
+export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
 });
+
+// ... restlicher Code
+
 
 // Alle Benutzer auslesen
 export async function getUsers() {

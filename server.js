@@ -6,14 +6,7 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-
-import {
-  getUsers,
-  getUserByUsername,
-  addUser,
-  updateLastLogin,
-  deleteUserByUsername
-} from './db.js';
+import { pool, getUsers, getUserByUsername, addUser, updateLastLogin, deleteUserByUsername } from './db.js';
 
 dotenv.config();
 
