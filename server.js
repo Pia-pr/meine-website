@@ -12,6 +12,9 @@ import {
   addUser,
   updateLastLogin
 } from './db.js';
+import dotenv from 'dotenv';
+dotenv.config({ path: '/etc/secrets/.env' });
+
 
 dotenv.config();
 
