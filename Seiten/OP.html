@@ -59,11 +59,12 @@
     main {
       max-width: 900px;
       margin: 0 auto;
-      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(90px);
       border-radius: 15px;
       padding: 20px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       margin-bottom: 10px;
+      border: 2px solid white;
     }
 
     h2 {
@@ -160,7 +161,7 @@
     <form id="addUserForm">
       <h3>Neuen Benutzer hinzufügen</h3>
       <input type="text" name="benutzername" placeholder="Benutzername" required />
-      <input type="password" name="passwort" placeholder="Passwort" required />
+      <input type="text" name="passwort" placeholder="Passwort" required />
       <button type="submit" class="btn">Hinzufügen</button>
     </form>
   </main>
