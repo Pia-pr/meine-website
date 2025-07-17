@@ -18,8 +18,10 @@ const port = process.env.PORT || 3000;
 
 // Middleware
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json()); // Für JSON Body parsing
+app.use(express.json());
 app.use(cookieParser());
+
+// Session Middleware
 app.use(
   session({
     secret: 'meinGeheimnis',
@@ -28,7 +30,13 @@ app.use(
   })
 );
 
-// Middleware: Auto-Login durch Cookie
+// Debug Middleware: zeigt alle Cookies (kann man entfernen, wenn alles klappt)
+app.use((req, res, next) => {
+  console.log('Cookies im Request:', req.cookies);
+  next();
+});
+
+// Auto-Login Middleware: setzt Session, wenn "rememberMe"-Cookie vorhanden
 app.use(async (req, res, next) => {
   if (!req.session.isLoggedIn && req.cookies.rememberMe) {
     try {
@@ -47,6 +55,8 @@ app.use(async (req, res, next) => {
 // POST: Login
 app.post('/login', async (req, res) => {
   const { benutzername, passwort, rememberMe } = req.body;
+  console.log('Login mit rememberMe:', rememberMe);
+
   try {
     const user = await getUserByUsername(benutzername);
 
@@ -57,10 +67,11 @@ app.post('/login', async (req, res) => {
       const now = new Date().toISOString();
       await updateLastLogin(benutzername, now);
 
-      if (rememberMe) {
+      if (rememberMe === 'on' || rememberMe === true) {
         res.cookie('rememberMe', benutzername, {
-          maxAge: 30 * 24 * 60 * 60 * 1000,
+          maxAge: 30 * 24 * 60 * 60 * 1000, // 30 Tage
           httpOnly: true,
+          path: '/',
         });
       }
 
@@ -176,7 +187,8 @@ app.delete('/api/users/:benutzername', async (req, res) => {
     res.status(500).send('Fehler beim Löschen');
   }
 });
-// Passwort ändern (für alle Benutzer erlaubt – nur OP darf UI sehen)
+
+// Passwort ändern (nur OP)
 app.post('/api/users/:benutzername/passwort', async (req, res) => {
   const { benutzername } = req.params;
   const { neuesPasswort } = req.body;
@@ -201,7 +213,6 @@ app.post('/api/users/:benutzername/passwort', async (req, res) => {
     res.status(500).send('Fehler beim Aktualisieren des Passworts');
   }
 });
-
 
 // OP-Seite
 app.get('/OP.html', (req, res) => {
@@ -242,7 +253,7 @@ app.get('/', (req, res) => {
 // Logout
 app.get('/logout', (req, res) => {
   req.session.destroy(() => {
-    res.clearCookie('rememberMe');
+    res.clearCookie('rememberMe', { path: '/' });
     res.redirect('/');
   });
 });
