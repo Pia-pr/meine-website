@@ -34,104 +34,129 @@
       margin: 0;
     }
 
-    .btn {
-      background-color: #1e9e1e;
-      border-radius: 20px;
-      border: none;
-      height: 40px;
-      width: 120px;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-      transition: background-color 0.3s ease, transform 0.2s;
-    }
+    /* ... bleibt wie gehabt bis zur Button-Definition ... */
 
-    .btn:hover {
-      background-color: #90ff9d;
-      transform: scale(1.05);
-    }
+.btn {
+  border-radius: 20px;
+  border: none;
+  height: 40px;
+  width: 150px;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s;
+  margin: 5px;
+}
 
-    a {
-      text-decoration: none;
-      color: white;
-    }
+.btn:hover {
+  transform: scale(1.05);
+}
 
-    main {
-      max-width: 900px;
-      margin: 0 auto;
-      backdrop-filter: blur(90px);
-      border-radius: 15px;
-      padding: 20px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      margin-bottom: 10px;
-      border: 2px solid white;
-    }
+.btn-back {
+  background-color: #1e9e1e;
+}
+.btn-back:hover {
+  background-color: #90ff9d;
+  color: black;
+}
 
-    h2 {
-      margin-top: 20px;
-      color: #333;
-    }
+.btn-add {
+  background-color: #007bff;
+}
+.btn-add:hover {
+  background-color: #5ab1ff;
+}
 
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 30px;
-    }
+.btn-change {
+  background-color: #ffc107;
+  color: black;
+}
+.btn-change:hover {
+  background-color: #ffe082;
+}
 
-    th, td {
-      padding: 10px;
-      text-align: left;
-      border-bottom: 1px solid #ddd;
-    }
+.delete-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  width: 150px;
+  height: 40px;
+  font-size: 16px;
+}
+.delete-btn:hover {
+  background-color: #a71d2a;
+}
 
-    th {
-      background-color: #7fe1ff;
-      color: rgb(0, 0, 0);
-    }
+main {
+  max-width: 900px;
+  margin: 0 auto;
+  backdrop-filter: blur(90px);
+  border-radius: 15px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  margin-bottom: 10px;
+  border: 2px solid white;
+  overflow-x: auto;
+}
 
-    .delete-btn {
-      background-color: #dc3545;
-      color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-    }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+  min-width: 500px;
+}
 
-    .delete-btn:hover {
-      background-color: #a71d2a;
-    }
+input {
+  padding: 8px;
+  margin: 5px 10px 5px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  width: calc(100% - 20px);
+  max-width: 200px;
+}
 
-    form {
-      margin-top: 30px;
-    }
+@media (max-width: 600px) {
+  header .Headline {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
 
-    input {
-      padding: 8px;
-      margin: 5px;
-      border-radius: 5px;
-      border: 1px solid #ccc;
-    }
+  .btn,
+  .btn-back,
+  .btn-add,
+  .btn-change,
+  .delete-btn {
+    width: 100%;
+    max-width: 250px;
+  }
 
-    @media (max-width: 600px) {
-      header .Headline {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-      }
+  table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 
-      .btn {
-        width: 100%;
-        max-width: 200px;
-      }
-    }
+  input {
+    width: 100%;
+    max-width: none;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+  }
+}
   </style>
 </head>
 <body>
   <header>
     <div class="Headline">
       <h1>Willkommen im Operator Bereich!</h1>
-      <a href="Login_OP.html"><button class="btn">Zurück</button></a>
+      <a href="Login_OP.html"><button class="btn btn-back">Zurück</button></a>
     </div>
   </header>
 
@@ -162,7 +187,7 @@
       <h3>Neuen Benutzer hinzufügen</h3>
       <input type="text" name="benutzername" placeholder="Benutzername" required />
       <input type="text" name="passwort" placeholder="Passwort" required />
-      <button type="submit" class="btn">Hinzufügen</button>
+      <button type="submit" class="btn btn-add">Hinzufügen</button>
     </form>
   </main>
 
@@ -198,7 +223,7 @@
             <td>${user.benutzername}</td>
             <td>
               <input type="text" placeholder="Neues Passwort" id="pw-${user.benutzername}" />
-              <button class="btn" onclick="changePassword('${user.benutzername}')">Ändern</button>
+              <button class="btn btn-change" onclick="changePassword('${user.benutzername}')">Ändern</button>
               ${user.benutzername !== 'Piaa' ? `<button class="delete-btn" onclick="deleteUser('${user.benutzername}')">Löschen</button>` : ''}
             </td>
           `;
