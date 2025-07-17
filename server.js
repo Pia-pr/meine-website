@@ -44,6 +44,35 @@ app.use(async (req, res, next) => {
   next();
 });
 
+// Hilfsfunktion: Löscht alle Login-Einträge älter als 30 Tage (außer bei Piaa)
+async function cleanOldLogins() {
+  try {
+    const users = await getUsers();
+    const now = new Date();
+
+    for (const user of users) {
+      if (user.benutzername === 'Piaa') continue; // Piaa nicht bearbeiten
+
+      const logins = user.login_history || [];
+
+      const filteredLogins = logins.filter(ts => {
+        const loginDate = new Date(ts);
+        const diffDays = (now - loginDate) / (1000 * 60 * 60 * 24);
+        return diffDays <= 30;
+      });
+
+      if (filteredLogins.length !== logins.length) {
+        await pool.query(
+          'UPDATE users SET login_history = $1 WHERE benutzername = $2',
+          [filteredLogins, user.benutzername]
+        );
+      }
+    }
+  } catch (err) {
+    console.error('Fehler beim Bereinigen der alten Logins:', err);
+  }
+}
+
 // POST: Login
 app.post('/login', async (req, res) => {
   const { benutzername, passwort, rememberMe } = req.body;
@@ -102,25 +131,38 @@ app.post('/register', async (req, res) => {
   }
 });
 
-// GET: Letzte 5 Logins pro Benutzer (nur für OP)
+// GET: Alle Logins als Liste (mit Bereinigung der alten Logins)
 app.get('/api/logins', async (req, res) => {
   if (!req.session.isLoggedIn || req.session.username !== 'Piaa') {
     return res.status(403).send('Nicht erlaubt');
   }
 
   try {
+    // Alte Logins löschen (außer Piaa)
+    await cleanOldLogins();
+
     const users = await getUsers();
-    const logins = users.map(user => ({
-      benutzername: user.benutzername,
-      login_history: user.login_history || []
-    }));
-    res.json(logins);
+    const allLogins = [];
+
+    for (const user of users) {
+      const logins = user.login_history || [];
+      for (const timestamp of logins) {
+        allLogins.push({
+          benutzername: user.benutzername,
+          zeitpunkt: timestamp,
+        });
+      }
+    }
+
+    // Nach Datum absteigend sortieren (neueste zuerst)
+    allLogins.sort((a, b) => new Date(b.zeitpunkt) - new Date(a.zeitpunkt));
+
+    res.json(allLogins);
   } catch (err) {
     console.error('Fehler beim Laden der Logins:', err);
     res.status(500).send('Fehler beim Laden der Logins');
   }
 });
-
 
 // Benutzer auflisten (nur OP)
 app.get('/api/users', async (req, res) => {
@@ -176,6 +218,7 @@ app.delete('/api/users/:benutzername', async (req, res) => {
     res.status(500).send('Fehler beim Löschen');
   }
 });
+
 // Passwort ändern (für alle Benutzer erlaubt – nur OP darf UI sehen)
 app.post('/api/users/:benutzername/passwort', async (req, res) => {
   const { benutzername } = req.params;
@@ -201,7 +244,6 @@ app.post('/api/users/:benutzername/passwort', async (req, res) => {
     res.status(500).send('Fehler beim Aktualisieren des Passworts');
   }
 });
-
 
 // OP-Seite
 app.get('/OP.html', (req, res) => {
