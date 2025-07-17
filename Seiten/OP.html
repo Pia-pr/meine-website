@@ -35,61 +35,25 @@
     }
 
     .btn {
+      background-color: #FF5733;
       border-radius: 20px;
       border: none;
       height: 40px;
-      width: 150px;
+      width: 120px;
       color: white;
       font-size: 16px;
       cursor: pointer;
       transition: background-color 0.3s ease, transform 0.2s;
-      margin: 5px;
     }
 
     .btn:hover {
+      background-color: #C70039;
       transform: scale(1.05);
     }
 
-    .btn-back {
-      background-color: #1e9e1e;
-    }
-
-    .btn-back:hover {
-      background-color: #90ff9d;
-      color: black;
-    }
-
-    .btn-add {
-      background-color: #007bff;
-    }
-
-    .btn-add:hover {
-      background-color: #5ab1ff;
-    }
-
-    .btn-change {
-      background-color: #fe06ee;
-      color: black;
-    }
-
-    .btn-change:hover {
-      background-color: #15ff00;
-    }
-
-    .delete-btn {
-      background-color: #dc3545;
+    a {
+      text-decoration: none;
       color: white;
-      border: none;
-      padding: 5px 10px;
-      border-radius: 5px;
-      cursor: pointer;
-      width: 150px;
-      height: 40px;
-      font-size: 16px;
-    }
-
-    .delete-btn:hover {
-      background-color: #a71d2a;
     }
 
     main {
@@ -101,7 +65,6 @@
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
       margin-bottom: 10px;
       border: 2px solid white;
-      overflow-x: auto;
     }
 
     h2 {
@@ -113,7 +76,6 @@
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 30px;
-      min-width: 500px;
     }
 
     th, td {
@@ -123,8 +85,21 @@
     }
 
     th {
-      background-color: #7fe1ff;
-      color: rgb(0, 0, 0);
+      background-color: #FF5733;
+      color: white;
+    }
+
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .delete-btn:hover {
+      background-color: #a71d2a;
     }
 
     form {
@@ -133,20 +108,9 @@
 
     input {
       padding: 8px;
-      margin: 5px 10px 5px 0;
+      margin: 5px;
       border-radius: 5px;
       border: 1px solid #ccc;
-      width: calc(100% - 20px);
-      max-width: 200px;
-    }
-
-    #loginList li {
-      background: rgba(255, 255, 255, 0.8);
-      margin-bottom: 8px;
-      padding: 10px;
-      border-radius: 8px;
-      color: #333;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
     }
 
     @media (max-width: 600px) {
@@ -156,29 +120,9 @@
         text-align: center;
       }
 
-      .btn,
-      .btn-back,
-      .btn-add,
-      .btn-change,
-      .delete-btn {
+      .btn {
         width: 100%;
-        max-width: 250px;
-      }
-
-      table {
-        display: block;
-        overflow-x: auto;
-        white-space: nowrap;
-      }
-
-      input {
-        width: 100%;
-        max-width: none;
-      }
-
-      form {
-        display: flex;
-        flex-direction: column;
+        max-width: 200px;
       }
     }
   </style>
@@ -187,13 +131,21 @@
   <header>
     <div class="Headline">
       <h1>Willkommen im Operator Bereich!</h1>
-      <a href="Login_OP.html"><button class="btn btn-back">Zurück</button></a>
+      <a href="Login_OP.html"><button class="btn">Zurück</button></a>
     </div>
   </header>
 
   <main>
-    <h2>Login-Historie</h2>
-    <ul id="loginList" style="list-style: none; padding-left: 0;"></ul>
+    <h2>Letzte Logins</h2>
+    <table id="loginTable">
+      <thead>
+        <tr>
+          <th>Benutzername</th>
+          <th>Letzter Login</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
 
     <h2>Benutzer verwalten</h2>
     <table id="userTable">
@@ -210,7 +162,7 @@
       <h3>Neuen Benutzer hinzufügen</h3>
       <input type="text" name="benutzername" placeholder="Benutzername" required />
       <input type="text" name="passwort" placeholder="Passwort" required />
-      <button type="submit" class="btn btn-add">Hinzufügen</button>
+      <button type="submit" class="btn">Hinzufügen</button>
     </form>
   </main>
 
@@ -220,17 +172,13 @@
         const res = await fetch('/api/logins');
         if (!res.ok) throw new Error('Zugriff verweigert');
         const data = await res.json();
-        const list = document.getElementById('loginList');
-        list.innerHTML = '';
-
+        const tbody = document.querySelector('#loginTable tbody');
+        tbody.innerHTML = '';
         data.forEach(user => {
-          const logins = user.login_history || [];
-          logins.forEach(timestamp => {
-            const li = document.createElement('li');
-            const date = new Date(timestamp).toLocaleString('de-DE');
-            li.textContent = `${date} – ${user.benutzername}`;
-            list.appendChild(li);
-          });
+          const loginTime = user.lastLogin ? new Date(user.lastLogin).toLocaleString('de-DE') : 'Nie';
+          const row = document.createElement('tr');
+          row.innerHTML = `<td>${user.benutzername}</td><td>${loginTime}</td>`;
+          tbody.appendChild(row);
         });
       } catch (err) {
         console.error('Fehler beim Laden der Logins:', err);
@@ -250,7 +198,7 @@
             <td>${user.benutzername}</td>
             <td>
               <input type="text" placeholder="Neues Passwort" id="pw-${user.benutzername}" />
-              <button class="btn btn-change" onclick="changePassword('${user.benutzername}')">Ändern</button>
+              <button class="btn" onclick="changePassword('${user.benutzername}')">Ändern</button>
               ${user.benutzername !== 'Piaa' ? `<button class="delete-btn" onclick="deleteUser('${user.benutzername}')">Löschen</button>` : ''}
             </td>
           `;
