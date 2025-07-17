@@ -34,122 +34,153 @@
       margin: 0;
     }
 
-    /* ... bleibt wie gehabt bis zur Button-Definition ... */
+    .btn {
+      border-radius: 20px;
+      border: none;
+      height: 40px;
+      width: 150px;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease, transform 0.2s;
+      margin: 5px;
+    }
 
-.btn {
-  border-radius: 20px;
-  border: none;
-  height: 40px;
-  width: 150px;
-  color: white;
-  font-size: 16px;
-  cursor: pointer;
-  transition: background-color 0.3s ease, transform 0.2s;
-  margin: 5px;
-}
+    .btn:hover {
+      transform: scale(1.05);
+    }
 
-.btn:hover {
-  transform: scale(1.05);
-}
+    .btn-back {
+      background-color: #1e9e1e;
+    }
 
-.btn-back {
-  background-color: #1e9e1e;
-}
-.btn-back:hover {
-  background-color: #90ff9d;
-  color: black;
-}
+    .btn-back:hover {
+      background-color: #90ff9d;
+      color: black;
+    }
 
-.btn-add {
-  background-color: #007bff;
-}
-.btn-add:hover {
-  background-color: #5ab1ff;
-}
+    .btn-add {
+      background-color: #007bff;
+    }
 
-.btn-change {
-  background-color: #ffc107;
-  color: black;
-}
-.btn-change:hover {
-  background-color: #ffe082;
-}
+    .btn-add:hover {
+      background-color: #5ab1ff;
+    }
 
-.delete-btn {
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  padding: 5px 10px;
-  border-radius: 5px;
-  cursor: pointer;
-  width: 150px;
-  height: 40px;
-  font-size: 16px;
-}
-.delete-btn:hover {
-  background-color: #a71d2a;
-}
+    .btn-change {
+      background-color: #ffc107;
+      color: black;
+    }
 
-main {
-  max-width: 900px;
-  margin: 0 auto;
-  backdrop-filter: blur(90px);
-  border-radius: 15px;
-  padding: 20px;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-  margin-bottom: 10px;
-  border: 2px solid white;
-  overflow-x: auto;
-}
+    .btn-change:hover {
+      background-color: #ffe082;
+    }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 30px;
-  min-width: 500px;
-}
+    .delete-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 5px;
+      cursor: pointer;
+      width: 150px;
+      height: 40px;
+      font-size: 16px;
+    }
 
-input {
-  padding: 8px;
-  margin: 5px 10px 5px 0;
-  border-radius: 5px;
-  border: 1px solid #ccc;
-  width: calc(100% - 20px);
-  max-width: 200px;
-}
+    .delete-btn:hover {
+      background-color: #a71d2a;
+    }
 
-@media (max-width: 600px) {
-  header .Headline {
-    flex-direction: column;
-    gap: 15px;
-    text-align: center;
-  }
+    main {
+      max-width: 900px;
+      margin: 0 auto;
+      backdrop-filter: blur(90px);
+      border-radius: 15px;
+      padding: 20px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      margin-bottom: 10px;
+      border: 2px solid white;
+      overflow-x: auto;
+    }
 
-  .btn,
-  .btn-back,
-  .btn-add,
-  .btn-change,
-  .delete-btn {
-    width: 100%;
-    max-width: 250px;
-  }
+    h2 {
+      margin-top: 20px;
+      color: #333;
+    }
 
-  table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-  }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      min-width: 500px;
+    }
 
-  input {
-    width: 100%;
-    max-width: none;
-  }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
 
-  form {
-    display: flex;
-    flex-direction: column;
-  }
-}
+    th {
+      background-color: #7fe1ff;
+      color: rgb(0, 0, 0);
+    }
+
+    form {
+      margin-top: 30px;
+    }
+
+    input {
+      padding: 8px;
+      margin: 5px 10px 5px 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: calc(100% - 20px);
+      max-width: 200px;
+    }
+
+    #loginList li {
+      background: rgba(255, 255, 255, 0.8);
+      margin-bottom: 8px;
+      padding: 10px;
+      border-radius: 8px;
+      color: #333;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    @media (max-width: 600px) {
+      header .Headline {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+      }
+
+      .btn,
+      .btn-back,
+      .btn-add,
+      .btn-change,
+      .delete-btn {
+        width: 100%;
+        max-width: 250px;
+      }
+
+      table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+      }
+
+      input {
+        width: 100%;
+        max-width: none;
+      }
+
+      form {
+        display: flex;
+        flex-direction: column;
+      }
+    }
   </style>
 </head>
 <body>
@@ -161,16 +192,8 @@ input {
   </header>
 
   <main>
-    <h2>Letzte Logins</h2>
-    <table id="loginTable">
-      <thead>
-        <tr>
-          <th>Benutzername</th>
-          <th>Letzter Login</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
+    <h2>Login-Historie</h2>
+    <ul id="loginList" style="list-style: none; padding-left: 0;"></ul>
 
     <h2>Benutzer verwalten</h2>
     <table id="userTable">
@@ -197,13 +220,17 @@ input {
         const res = await fetch('/api/logins');
         if (!res.ok) throw new Error('Zugriff verweigert');
         const data = await res.json();
-        const tbody = document.querySelector('#loginTable tbody');
-        tbody.innerHTML = '';
+        const list = document.getElementById('loginList');
+        list.innerHTML = '';
+
         data.forEach(user => {
-          const loginTime = user.lastLogin ? new Date(user.lastLogin).toLocaleString('de-DE') : 'Nie';
-          const row = document.createElement('tr');
-          row.innerHTML = `<td>${user.benutzername}</td><td>${loginTime}</td>`;
-          tbody.appendChild(row);
+          const logins = user.login_history || [];
+          logins.forEach(timestamp => {
+            const li = document.createElement('li');
+            const date = new Date(timestamp).toLocaleString('de-DE');
+            li.textContent = `${date} – ${user.benutzername}`;
+            list.appendChild(li);
+          });
         });
       } catch (err) {
         console.error('Fehler beim Laden der Logins:', err);

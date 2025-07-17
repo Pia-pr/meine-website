@@ -112,8 +112,7 @@ app.get('/api/logins', async (req, res) => {
     const users = await getUsers();
     const logins = users.map(user => ({
       benutzername: user.benutzername,
-      lastLogin: (user.login_history || []).slice(-1)[0] || 'Nie',
-      lastFiveLogins: (user.login_history || []).slice(-5).reverse()
+      login_history: user.login_history || []
     }));
     res.json(logins);
   } catch (err) {
@@ -121,6 +120,7 @@ app.get('/api/logins', async (req, res) => {
     res.status(500).send('Fehler beim Laden der Logins');
   }
 });
+
 
 // Benutzer auflisten (nur OP)
 app.get('/api/users', async (req, res) => {
