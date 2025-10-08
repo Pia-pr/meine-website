@@ -2,11 +2,10 @@ import pkg from 'pg';
 const { Pool } = pkg;
 
 export const pool = new Pool({
-  connectionString:
-    process.env.DATABASE_URL ||
-    'postgres://avnadmin:AVNS_MoaG89SBRU_wzmI-hDb@bewerbungsql-piaraikowski-a8e7.f.aivencloud.com:25024/defaultdb?sslmode=require',
+  connectionString: process.env.DATABASE_URL,
   ssl: { rejectUnauthorized: false }
 });
+
 
 
 export async function getUsers() {
