@@ -1,5 +1,4 @@
 import pkg from 'pg';
-import fs from 'fs';
 import 'dotenv/config';
 
 const { Pool } = pkg;
@@ -10,7 +9,6 @@ export const pool = new Pool({
     rejectUnauthorized: false
   }
 });
-
 
 export async function getUsers() {
   try {
