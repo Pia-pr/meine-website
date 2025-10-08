@@ -2,14 +2,13 @@ import pkg from 'pg';
 const { Pool } = pkg;
 
 export const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: process.env.DATABASE_URL ? { rejectUnauthorized: false } : false
+  connectionString:
+    process.env.DATABASE_URL ||
+    'postgres://avnadmin:AVNS_MoaG89SBRU_wzmI-hDb@bewerbungsql-piaraikowski-a8e7.f.aivencloud.com:25024/defaultdb?sslmode=require',
+  ssl: { rejectUnauthorized: false }
 });
 
-// ... restlicher Code
 
-
-// Alle Benutzer auslesen
 export async function getUsers() {
   try {
     const res = await pool.query('SELECT * FROM users');
@@ -20,10 +19,12 @@ export async function getUsers() {
   }
 }
 
-// Benutzer nach Benutzernamen auslesen
 export async function getUserByUsername(username) {
   try {
-    const res = await pool.query('SELECT * FROM users WHERE benutzername = $1', [username]);
+    const res = await pool.query(
+      'SELECT * FROM users WHERE benutzername = $1',
+      [username]
+    );
     return res.rows[0];
   } catch (err) {
     console.error('Fehler bei getUserByUsername:', err);
@@ -31,7 +32,6 @@ export async function getUserByUsername(username) {
   }
 }
 
-// Neuen Benutzer hinzufügen
 export async function addUser(benutzername, passwort) {
   try {
     await pool.query(
@@ -44,7 +44,6 @@ export async function addUser(benutzername, passwort) {
   }
 }
 
-// Login-Zeit zur Login-History hinzufügen
 export async function updateLastLogin(username, time) {
   try {
     await pool.query(
@@ -59,7 +58,6 @@ export async function updateLastLogin(username, time) {
   }
 }
 
-// Benutzer löschen
 export async function deleteUserByUsername(benutzername) {
   try {
     await pool.query('DELETE FROM users WHERE benutzername = $1', [benutzername]);
