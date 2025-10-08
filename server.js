@@ -7,6 +7,8 @@ import dotenv from 'dotenv';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import { pool, getUsers, getUserByUsername, addUser, updateLastLogin, deleteUserByUsername } from './db.js';
+import { initializeDatabase } from './db.js';
+
 
 dotenv.config();
 
@@ -265,6 +267,11 @@ app.get('/download/:filename', (req, res) => {
 
 // Statische Dateien
 app.use(express.static(path.resolve(__dirname, 'Seiten')));
+
+// 🟢 Datenbank automatisch initialisieren
+initializeDatabase()
+  .then(() => console.log('Datenbank bereit ✅'))
+  .catch(err => console.error('Fehler bei der DB-Initialisierung:', err));
 
 // Server starten
 app.listen(port, () => {

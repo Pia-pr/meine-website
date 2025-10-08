@@ -10,6 +10,23 @@ export const pool = new Pool({
   }
 });
 
+// 🟢 Automatische Initialisierung der Datenbank
+export async function initializeDatabase() {
+  try {
+    await pool.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        benutzername TEXT PRIMARY KEY,
+        passwort TEXT NOT NULL,
+        login_history TEXT[]
+      );
+    `);
+    console.log('✅ Datenbank initialisiert (Tabelle users vorhanden oder neu erstellt)');
+  } catch (err) {
+    console.error('❌ Fehler bei der Datenbank-Initialisierung:', err);
+    throw err;
+  }
+}
+
 export async function getUsers() {
   try {
     const res = await pool.query('SELECT * FROM users');
