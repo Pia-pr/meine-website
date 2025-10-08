@@ -1,4 +1,6 @@
+import pkg from 'pg';
 import 'dotenv/config';
+
 const { Pool } = pkg;
 
 export const pool = new Pool({
@@ -57,7 +59,10 @@ export async function updateLastLogin(username, time) {
 
 export async function deleteUserByUsername(benutzername) {
   try {
-    await pool.query('DELETE FROM users WHERE benutzername = $1', [benutzername]);
+    await pool.query(
+      'DELETE FROM users WHERE benutzername = $1',
+      [benutzername]
+    );
   } catch (err) {
     console.error('Fehler bei deleteUserByUsername:', err);
     throw err;
