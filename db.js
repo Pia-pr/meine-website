@@ -1,4 +1,5 @@
 import pkg from 'pg';
+import fs from 'fs';
 import 'dotenv/config';
 
 const { Pool } = pkg;
@@ -6,7 +7,8 @@ const { Pool } = pkg;
 export const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
   ssl: {
-    rejectUnauthorized: false // akzeptiert selbst-signierte Zertifikate von Aiven
+    ca: fs.readFileSync('./ca.pem').toString(), 
+    rejectUnauthorized: true 
   }
 });
 
