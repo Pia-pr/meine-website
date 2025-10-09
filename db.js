@@ -10,7 +10,6 @@ export const pool = new Pool({
   }
 });
 
-// 🟢 Automatische Initialisierung der Datenbank
 export async function initializeDatabase() {
   try {
     await pool.query(`
