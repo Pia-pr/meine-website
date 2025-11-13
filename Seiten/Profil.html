@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css" rel="stylesheet">
     <link rel="icon" type="image/x-icon" href="">
-    <title>Profil</title>
+    <title>NOR und NAND Speicher</title>
     <style>
 * {
     margin: 0;
@@ -89,16 +89,60 @@ body {
     background-position: center;
 }
 
-.Anfang {
-    font-size: 1.5rem;
-    margin-bottom: 20px;
-    text-align: justify;
+.bubble {
+    width: 100%;
+    margin: 20px 0;
+    padding: 20px;
     background-color: transparent;
     border: 2px solid white;
+    border-radius: 50px;
     backdrop-filter: blur(20px);
-    border-radius: 15px;
-    padding: 20px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-align: left;
+}
+
+.bubble h2 {
+    margin-bottom: 15px;
+    color: black;
+    font-size: 1.5rem;
+}
+
+.bubble table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    background-color: transparent;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.bubble th, .bubble td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid white;
+}
+
+.bubble th {
+    background-color: transparent;
+    color: black;
+    font-weight: bold;
+}
+
+.bubble tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+.bubble tr:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.bubble ul {
+    margin: 1em 0;
+    padding-left: 20px;
+}
+
+.bubble ul li {
+    margin-bottom: 0.5em;
 }
 
 footer {
@@ -140,6 +184,7 @@ footer {
     background-color: #0056b3;
     transform: scale(1.05);
 }
+
 @media (max-width: 600px) {
     header {
         padding: 15px;
@@ -160,29 +205,87 @@ footer {
         <form action="/logout" method="get">
             <button type="submit" class="btn">Abmelden</button>
         </form>
-        <h1>Meine Bewerbung</h1>
+        <h1>NOR- und NAND-Flash-Speicher</h1>
         <div class="Link">
             <a href="Login.html">Home</a>
             <a href="uebermich.html">Über mich</a>
-            <a href="Profil.html" class="Main">Download</a>
+            <a href="Profil.html" class="Main">Nor und Nand</a>
         </div>
-        </header>
-        <main>
-            <p class="Anfang">
-                Alle notwendigen Dateien stehen hier zum Download bereit. <br>
-                Falls noch etwas fehlt oder Sie weitere Informationen brauchen, sagen Sie einfach Bescheid!
-            </p>
-        
-            <div class="download">
-                <a href="" download="Zeugnis" id="Download-btn">Realschulzeugnis herunterladen<i class='bx bxs-download'></i></a>
-                <a href="" download="Lebenslauf" id="Download-btn">Lebenslauf herunterladen<i class='bx bxs-download'></i></a>
-                <a href="" download="Praktikumszertifikat" id="Download-btn">Praktikumszertifikat GEWO herunterladen<i class='bx bxs-download'></i></a>
-            </div>
-        </main>
-        <footer>
-            <p>&copy; 2025 Pia Raikowski. Alle Rechte vorbehalten.</p>
-        </footer>
-        
+    </header>
+    <main>
+        <div class="bubble">
+            <p>Flash-Speicher zählen zu den nichtflüchtigen elektronischen Speichertechnologien und sind als NOR und NAND am häufigsten vertreten.</p>
+        </div>
+
+        <div class="bubble">
+            <h2>Unterschiede im Überblick</h2>
+            <table>
+                <tr>
+                    <th>Eigenschaft</th>
+                    <th>NOR-Flash</th>
+                    <th>NAND-Flash</th>
+                </tr>
+                <tr>
+                    <td>Speicherzell-Anordnung</td>
+                    <td>Parallel</td>
+                    <td>Seriell</td>
+                </tr>
+                <tr>
+                    <td>Zufälliger Zugriff (Random Access)</td>
+                    <td>Möglich (schnell)</td>
+                    <td>Nur blockweise (langsamer)</td>
+                </tr>
+                <tr>
+                    <td>Lese-/Schreibgeschwindigkeit</td>
+                    <td>Schnelle Lesegeschwindigkeit, langsames Schreiben/Löschen großer Datenmengen</td>
+                    <td>Schnelles Schreiben/Löschen, aber langsameres Lesen bei Random Access</td>
+                </tr>
+                <tr>
+                    <td>Speicherdichte</td>
+                    <td>Weniger Kapazität, meist bis wenige GB</td>
+                    <td>Hohe Kapazitäten (bis zu mehrere TB)</td>
+                </tr>
+                <tr>
+                    <td>Kosten pro Bit</td>
+                    <td>Höher</td>
+                    <td>Niedriger</td>
+                </tr>
+                <tr>
+                    <td>Typische Anwendungen</td>
+                    <td>Firmware, BIOS, Mikrocontroller</td>
+                    <td>USB-Sticks, SSDs, Speicherkarten, Smartphones</td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="bubble">
+            <h2>NOR-Flash</h2>
+            <ul>
+                <li>Eignet sich für schnelle Lesezugriffe und direkte Codeausführung („Execute in Place”)</li>
+                <li>Wird vor allem für Bootcode, Firmware und kleine Speichermengen eingesetzt</li>
+                <li>Relativ teuer und energiehungrig</li>
+                <li>Lebensdauer ca. 10 Jahre, robust und stoßfest</li>
+                <li>Nur für moderate Speicherkapazitäten geeignet</li>
+            </ul>
+        </div>
+
+        <div class="bubble">
+            <h2>NAND-Flash</h2>
+            <ul>
+                <li>Serielle Anordnung ermöglicht kompaktere Bauweise und höhere Speicherdichte</li>
+                <li>Ideal für Massenspeicherlösungen wegen niedriger Kosten und großer Kapazität</li>
+                <li>Muss blockweise beschrieben und gelöscht werden, nicht jede Zelle einzeln</li>
+                <li>Nicht optimal für Codeausführung, aber ausgezeichnet für Datenspeicherung</li>
+                <li>Technologien wie SLC, MLC, TLC und QLC erlauben Speicherung von mehreren Bits pro Zelle</li>
+            </ul>
+        </div>
+
+        <div class="bubble">
+            <p>NOR-Flash ist prädestiniert für Anwendungen mit schnellen, zufälligen Lesezugriffen und kleiner Speichermenge, z.B. für Firmware oder BIOS. NAND-Flash ist durch höhere Speicherdichte und geringere Kosten die bevorzugte Wahl für große Massenspeicher wie SSDs oder Speicherkarten[web:1][web:5][web:6][web:10][web:14].</p>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2025 – Technische Dokumentation: NOR und NAND Flash-Speicher</p>
     </footer>
 </body>
 </html>
